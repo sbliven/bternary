@@ -1,0 +1,4 @@
+BTernary.js is a javascript library for performing arithmetic in balanced ternary.
+
+BTernary.html gives an example of using the library to write a simple balanced
+ternary calculator.
