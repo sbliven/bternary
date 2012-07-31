@@ -1,6 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="bternary.js"></script>
     <script type="text/javascript" src="btCalc.js"></script>
     <LINK href="bternary.css" rel="stylesheet" type="text/css" />
@@ -38,14 +39,15 @@ Ternary numbers are calculated to 10 decimal places.</p>
 <tr>
     <td>Decimal:</td>
     <td><input type="text" name="decimalIn" 
-        onkeyup="convertDtoBT(this.form.decimalIn,this.form.ternaryIn)" />
+        onkeyup="convertDtoBT(this.form.decimalIn,this.form.ternaryIn,document.getElementById('convertErr'));" />
     </td>
 <tr></tr>
     <td>Ternary:</td>
     <td><input type="text" name="ternaryIn" 
-        onkeyup="convertBTtoD(this.form.ternaryIn,this.form.decimalIn);"/>
+        onkeyup="convertBTtoD(this.form.ternaryIn,this.form.decimalIn,document.getElementById('convertErr'));"/>
     </td>
 </tr>
+<tr><td></td><td><div class="error" id="convertErr"></div></td></tr>
 </table>
 </form>
 
@@ -64,8 +66,9 @@ multiplication produce exact results. Division is calculated to 10 decimal place
 </select>
 <input type="text" name="b" />
 <input type="submit" value="="
- onclick="calculate(this.form.a,this.form.operator,this.form.b,this.form.c); return false;" />
+ onclick="calculate(this.form.a,this.form.operator,this.form.b,this.form.c,document.getElementById('calculatorErr')); return false;" />
 <input type="text" name="c" readonly="readonly"/>
+<div class="error" id="calculatorErr"></div>
 
 </form>
 </div>
