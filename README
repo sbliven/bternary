@@ -1,4 +1,21 @@
-BTernary.js is a javascript library for performing arithmetic in balanced ternary.
+BTernary.js is a javascript library for performing arithmetic in balanced ternary. It
+represents balanced ternary numbers as strings of '-0+' characters, and implements basic
+arithmetic operations.
 
-BTernary.html gives an example of using the library to write a simple balanced
-ternary calculator.
+EXAMPLE
+=======
+
+Bternary.html gives an example of using the library to write a simple balanced
+ternary calculator. It references btCalc.js to provide controller code, as well as the
+bternary.js library and bternary.css.
+
+
+UNIT TESTS
+==========
+
+To run the unit tests, execute btTests.js while including bternary.js. For instance:
+
+  jsc bternary.js btTests.js 
+
+It should print "All tests passed" upon success, or an error message if something failed.
+If nothing prints, it is likely that bternary.js is not being included properly.

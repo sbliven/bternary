@@ -1,4 +1,5 @@
-/*
+/**
+ * Compute a+b
  * Inputs: two balanced ternary numbers, in -0+ notation
  */
 function add(a, b) {
@@ -62,10 +63,19 @@ function add(a, b) {
 
     return toCannonical(r);
 }
+/**
+ * Compute a-b
+ * Inputs: two balanced ternary numbers, in -0+ notation
+ */
 function sub(a, b) {
     return add(a, neg(b));
 }
-
+/**
+ * Compute a*b
+ * Inputs: two balanced ternary numbers, in -0+ notation
+ * 
+ * Uses a simple shift-and-add algorithm
+ */
 function mult(a,b) {
     var r = "0";
     
@@ -90,7 +100,14 @@ function mult(a,b) {
     return toCannonical(r);
 }
 
-/* Compute a/q
+/* Compute a/b
+ * Inputs: two balanced ternary numbers, in -0+ notation. Optionally, the number of digits
+ *         precision to store (default 10).
+ *
+ * Uses a long division algorithm, terminating after the specified precision is reached.
+ * Note that some rational numbers have two equivalent balanced ternary representations
+ * (eg 1/2 = +/+- = 0.+++++... = +.-----...). In such cases, the one with fewer digits
+ * is returned, although this behavior should not be counted on.
  */
 function div(a,b, prec) {
     // a    dividend
@@ -143,7 +160,13 @@ function div(a,b, prec) {
     
     return toCannonical(q);
 }
-/* Left shift, aka multiplication by 3
+
+/* Left shift, aka multiplication by 3.
+ * Inputs: A balanced ternary numbers, in -0+ notation, and an integer giving the number
+ *         of places to shift.
+ * Example: lshift('+.-',2) == '+-0'
+ *
+ * Negative shift amounts are equivalent to right shifting an equal amount.
  */
 function lshift(a, shift) {
     var r;
@@ -173,9 +196,17 @@ function lshift(a, shift) {
     }
     return toCannonical(r);
 }
+/* Right shift, aka division by 3.
+ * Inputs: A balanced ternary numbers, in -0+ notation, and an integer giving the number
+ *         of places to shift.
+ * Example: rshift('+-0',2) == '+.-0'
+ *
+ * Negative shift amounts are equivalent to left shifting an equal amount.
+ */
 function rshift(a, shift) { return lshift(a, -shift); }
 
-/* Returns '-' if a<b, '0' for a=b, and '+' for a>b
+/**
+ * Returns '-' if a<b, '0' for a==b, and '+' for a>b
  */
 function compare(a,b) {
     //align decimal places
@@ -207,11 +238,26 @@ function compare(a,b) {
     return '0';
 }
 
+/**
+ * Returns true if a<b
+ */
 function lt(a,b) { return compare(a,b)=='-'; }
+/**
+ * Returns true if a>b
+ */
 function gt(a,b) { return compare(a,b)=='+'; }
+/**
+ * Returns true if a<=b
+ */
 function leq(a,b) { return compare(a,b)!='+'; }
+/**
+ * Returns true if a>=b
+ */
 function geq(a,b) { return compare(a,b)!='-'; }
 
+/**
+ * Returns the absolute value of a
+ */
 function abs(a) {
     for(var i=0;i<a.length;i++) {
         switch(a[i]) {
@@ -225,6 +271,9 @@ function abs(a) {
     return a; //must be 0
 }
 
+/**
+ * Returns the sign (the first bit) of a, in '-0+' notation
+ */
 function sign(a) {
     for(var i=0;i<a.length;i++) {
         if(a[i] != '0' && a[i] != '.' ) {
@@ -234,7 +283,9 @@ function sign(a) {
     return '0'; //must be 0
 }
 
-// return -a
+/**
+ * return -a
+ */
 function neg(a) {
     var r = ""
     for(var i=0;i<a.length;i++) {
@@ -247,12 +298,11 @@ function neg(a) {
     return r
 }
 
-if(typeof quit == "undefined") {
-    function quit(str) {
-        alert(str)
-    }
-}
-
+/**
+ * Pads a and/or b with zeros so that they have the same number of digits and their
+ * decimal places are aligned.
+ * Returns a 2-element array containing the aligned [a,b] 
+ */
 function alignDecimals(a,b) {
     var decA = a.indexOf('.');
     var decB = b.indexOf('.');
@@ -306,6 +356,15 @@ function alignDecimals(a,b) {
     return [newA,newB];
 }
 
+/**
+ * Converts a balanced ternary number to decimal
+ * Input: A string containing a balanced ternary number, in -0+ notation.
+ * Output: A Number approximating the input
+ *
+ * Note that converting fractions from ternary to binary can result in fairly significant
+ * loss of precision, since most finite ternary numbers have infinitely repeating binary
+ * approximations.
+ */
 function ternaryToNumber(a) {
     var sum=0;
     
@@ -345,6 +404,25 @@ function ternaryToNumber(a) {
     return sum;
 }
 
+/**
+ * Converts a balanced ternary number to decimal
+ *
+ * Input: A Number, to be converted; an optional precision (default 10); and an optional
+ *        character specifying the rounding direction (default '-')
+ * Output: A string containing a balanced ternary number, in -0+ notation.
+ *
+ * Note that converting fractions from binary to ternary can result in fairly significant
+ * loss of precision, since most finite binary numbers have infinitely repeating ternary
+ * approximations.
+ *
+ * Some rational numbers have two equivalent balanced ternary representations
+ * (eg 1/2 = +/+- = 0.+++++... = +.-----...). In such cases, dir parameter determines 
+ * which alternative to round:
+ *  * -    round near-integer bits towards 0
+ *  * +    round near-integer bits away from zero
+ *
+ * See numberToTernaries() if all possible representations are required
+ */
 function numberToTernary(n, prec, dir) {
     // dir biases the direction we round bits
     // -    round near-integer bits towards 0
@@ -359,6 +437,26 @@ function numberToTernary(n, prec, dir) {
     }
     return numberToTernaries(n, prec, dir)[0];
 }
+/**
+ * Converts a balanced ternary number to decimal
+ *
+ * Input: A Number, to be converted; an optional precision (default 10); and an optional
+ *        character specifying the rounding direction (default '0')
+ * Output: An array of strings containing balanced ternary numbers, in -0+ notation.
+ *
+ * Note that converting fractions from binary to ternary can result in fairly significant
+ * loss of precision, since most finite binary numbers have infinitely repeating ternary
+ * approximations.
+ *
+ * Some rational numbers have two equivalent balanced ternary representations
+ * (eg 1/2 = +/+- = 0.+++++... = +.-----...). In such cases, dir parameter determines 
+ * which alternative to round:
+ *  * -    round near-integer bits towards 0
+ *  * +    round near-integer bits away from zero
+ *  * 0    follow both rounding possibilities
+ *
+ * See numberToTernary() if only one rounding possibility is required
+ */
 function numberToTernaries(n,prec, dir) {
     // dir biases the direction we round bits
     // -    round near-integer bits towards 0
@@ -413,14 +511,14 @@ function numberToTernaries(n,prec, dir) {
     
     msd = lshift(msd, bits);
     
-    //console.log(n+" = "+msd+" + "+remainder);
+    //log(n+" = "+msd+" + "+remainder);
         
     // detect infinite oscilations.
     if(n == -remainder) {
         if(  dir = "+" ) {
             dir = "-";
         } else {
-            console.log("Error: oscillating between "+n+" and "+remainder)
+            log("Error: oscillating between "+n+" and "+remainder)
             return [""]
         }
     }
@@ -448,141 +546,21 @@ function toCannonical(a) {
     return r;
 }
 
-// TEST CASES
-function eq(a,b) {return JSON.stringify(a) == JSON.stringify(b);}
-function eqf(a,b,prec) {return Math.abs(a-b)<(prec?prec:1e-14);}
-function test() { 
-(function(x) {for(var i=0;i<x.length;i++) {if(!x[i]) console.log(i+": false");} return x;})(
-[
-eq( neg("++0-.++000-00"),               "--0+.--000+00" ),
-eq( neg("0"),                           "0" ),
-eq( neg("+"),                           "-" ),
-eq( neg("-"),                           "+" ),
-
-eq( alignDecimals("+.000","---"),       ["00+.000", "---.000"] ),
-eq( alignDecimals(".0",".-"),           [".0", ".-"] ),
-eq( alignDecimals(".0","0."),           ["0.0", "0.0"] ),
-eq( alignDecimals("+","0"),             ["+", "0"] ),
-
-eq( toCannonical("000+.+000"),          "+.+" ),
-eq( toCannonical("000+.000"),           "+" ),
-eq( toCannonical("000.+000"),           "0.+" ),
-eq( toCannonical(".+000"),              "0.+" ),
-eq( toCannonical("+000"),               "+000" ),
-eq( toCannonical("-000.000"),           "-000" ),
-
-eq( add("+","-"),                       "0" ),
-eq( add("+","0"),                       "+" ),
-eq( add("+","+"),                       "+-" ),
-eq( add("-","-"),                       "-+" ),
-eq( add("-","+"),                       "0" ),
-eq( add("-","0"),                       "-" ),
-eq( add(".+",".-"),                     "0" ),
-eq( add(".+",".+"),                     "+.-" ),
-
-eq( sub("+00+","+--.+"),                "+0--.-" ),
-
-eqf( ternaryToNumber("+"),              1 ),
-eqf( ternaryToNumber("-"),              -1 ),
-eqf( ternaryToNumber("0"),              0 ),
-eqf( ternaryToNumber("0.0"),            0 ),
-eqf( ternaryToNumber(".+"),             1/3 ),
-eqf( ternaryToNumber("+.-"),            2/3 ),
-eqf( ternaryToNumber("+--+"),           16 ),
-eqf( ternaryToNumber("+0000"),          81 ),
-eqf( ternaryToNumber("-0000"),          -81 ),
-eqf( ternaryToNumber("++-0+"),          100 ),
-eqf( ternaryToNumber(".+++++++++++++++++++++"),.5,1e-10), // converges slowly
-eqf( ternaryToNumber("+.---------------------"),.5,1e-10), // converges slowly
-
-eq( numberToTernary(1),                 "+" ),
-eq( numberToTernary(-1),                "-" ),
-eq( numberToTernary(0),                 "0" ),
-eq( numberToTernary(3),                 "+0" ),
-eq( numberToTernary(9),                 "+00" ),
-eq( numberToTernary(12),                "++0" ),
-eq( numberToTernary(100),               "++-0+" ),
-eq( numberToTernary(-3),                "-0" ),
-eq( numberToTernary(-12),               "--0" ),
-eq( numberToTernary(1/3),               "0.+" ),
-eq( numberToTernary(-1/3),              "0.-" ),
-eq( numberToTernary(-2/9),              "0.-+" ),
-eq( numberToTernary(1/2),               "0.++++++++++" ),
-eq( numberToTernary(1/2,3),             "0.+++" ),
-eq( numberToTernary(-1/2),              "0.----------" ),
-eq( numberToTernaries(1/2),             ["0.++++++++++", "+.----------"] ),
-eq( numberToTernaries(1/6,3),           ["0.0++", "0.+--"] ),
-eq( numberToTernaries(1/27),            ["0.00+"] ),
-
-eq(lshift("+-.0+",0),                   "+-.0+" ),
-eq(lshift("+-.0+",-1),                  "+.-0+" ),
-eq(lshift("+-.0+",-2),                  "0.+-0+" ),
-eq(lshift("+-.0+",-3),                  "0.0+-0+" ),
-eq(lshift("+-.0+",-4),                  "0.00+-0+" ),
-eq(lshift("+-.0+",1),                   "+-0.+" ),
-eq(lshift("+-.0+",2),                   "+-0+" ),
-eq(lshift("+-.0+",3),                   "+-0+0" ),
-eq(lshift("+-.0+",5),                   "+-0+000" ),
-eq(lshift(".0+",-2),                    "0.000+" ),
-eq(lshift("+-",2),                      "+-00" ),
-
-eq(mult("+-+","+"),                     "+-+"),
-eq(mult("+-+.+","-"),                   "-+-.-"),
-eq(mult("+-+.+","+-.+"),                "+-0-.0+"),
-eq(mult(".00+","+000"),                 "+"),
-eq(mult("+-+.+","+-.+"),                "+-0-.0+"),
-eq(mult("+-+.+","+-.+"),                "+-0-.0+"),
-eq(mult("+-+.+","+-.+"),                "+-0-.0+"),
-
-eq(compare("-","+"),                    "-"),
-eq(compare("0","+"),                    "-"),
-eq(compare("+","+"),                    "0"),
-eq(compare("+","-"),                    "+"),
-eq(compare("+","0"),                    "+"),
-eq(compare("-","-"),                    "0"),
-eq(compare("++-","++0"),                "-"),
-eq(compare("0.0000+","0.0000++"),       "-"),
-eq(compare("+0","+.0"),                 "+"),
-
- lt("-","+"),
-!lt("++","+"),
-!lt("0","0.0"),
-!gt("-","+"),
- gt("++","+"),
-!gt("0","0.0"),
- leq("-","+"),
-!leq("++","+"),
- leq("0","0.0"),
-!geq("-","+"),
- geq("++","+"),
- geq("0","0.0"),
-
-eq(abs("+--+.--"),                      "+--+.--" ),
-eq(abs("---+.--"),                      "+++-.++" ),
-eq(abs("0.00-"),                        "0.00+" ),
-eq(abs("000.0000"),                     "000.0000" ),
-
-eq(sign("+000-.0"),                     "+" ),
-eq(sign("-000-.0"),                     "-" ),
-eq(sign("000-.0"),                      "-" ),
-eq(sign("0.000-0"),                     "-" ),
-eq(sign("000.00"),                      "0" ),
-
-eq(div("+--+","++"),                    "++"),
-eq(div("+--.+","++"),                   "+.+"),
-eq(div(".+--+","++"),                   "0.00++"),
-eq(div("+","+0"),                       "0.+"),
-eq(div("+","+00"),                      "0.0+"),
-eq(div("+","+-",4),                     "0.++++"),
-eq(div("+-0.+","-"),                    "-+0.-"),
-eq(div("+--+","+.+"),                   "++0"),
-eq(div("+--0",".+"),                    "+--00"),
-eq(div("+--0","0.+"),                   "+--00"),
-
-
-]
-).reduceRight(function(a,b) {return a&&b;}) &&
-console.log("All tests passed")
+// Utility functions
+if(typeof quit == "undefined") {
+    function quit(str) {
+        alert(str)
+    }
 }
 
-//test()
+log = (function() {
+    // If a console is available, use it to log
+    if(typeof console != "undefined") {
+        return function(msg) {
+            return console.log(msg);
+        }
+    } else {
+        // otherwise, try the print function
+        return print;
+    }
+})();
