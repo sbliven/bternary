@@ -2,8 +2,8 @@ BTernary.js is a javascript library for performing arithmetic in balanced ternar
 represents balanced ternary numbers as strings of '-0+' characters, and implements basic
 arithmetic operations.
 
-EXAMPLE
-=======
+EXAMPLES
+========
 
 Bternary.html gives an example of using the library to write a simple balanced
 ternary calculator. It references btCalc.js to provide controller code, as well as the
@@ -19,3 +19,20 @@ To run the unit tests, execute btTests.js while including bternary.js. For insta
 
 It should print "All tests passed" upon success, or an error message if something failed.
 If nothing prints, it is likely that bternary.js is not being included properly.
+
+LICENSE
+=======
+
+BTernary is licensed under the LGPL license. Code can be accessed from
+https://github.com/sbliven/bternary/
+
+AUTHOR
+======
+
+This library was written by Spencer Bliven (spencer.bliven at gmail.com).
+Bug reports should be made through the GitHub repository.
+
+HISTORY
+=======
+
+1.0     Initial release
